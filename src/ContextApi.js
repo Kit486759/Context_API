@@ -1,21 +1,79 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useReducer } from 'react';
 
-export const Context = createContext()
+const Context = createContext();
 
-export default function ContextApi({children}) {
+const infoReducer = (state, action) => {
+    switch (action.type) {
+        case "DELETE_INFO":
+            return state.filter((info) => info.id !== action.payload)
+        default:
+            return state
+    } 
+}
 
-    const [info] = useState({
-        name: "Kit",
-        address: "Vancouver",
-        gender: "Male"
-    })
+function ContextProvider({ children }) {
 
-    
+
+    const [info, dispatch] = useReducer(infoReducer,
+        [
+            {
+                name: "Kit",
+                address: "Vancouver",
+                gender: "Male",
+                id: 0
+            },
+            {
+                name: "Taichi",
+                address: "Vancouver",
+                gender: "Male",
+                id: 1
+            },
+            {
+                name: "Miyabi",
+                address: "Vancouver",
+                gender: "Female",
+                id: 2
+            }
+        ])
+
+
 
     return (
-        <Context.Provider value={info}>
-           {children}
+        <Context.Provider value={{ info, dispatch }}>
+            {children}
         </Context.Provider>
     )
 }
 
+export { Context, ContextProvider as default }
+
+
+
+// {
+//     name: "Kit",
+//     address: "Vancouver",
+//     gender: "Male",
+//     id: 0
+// },
+// {
+//     name: "Taichi",
+//     address: "Vancouver",
+//     gender: "Male",
+//     id: 1
+// },
+// {
+//     name: "Miyabi",
+//     address: "Vancouver",
+//     gender: "Female",
+//     id: 2
+// }
+
+// const reducer = (state, action) => {
+//     switch (action.type) {
+//         case "DELETE":
+//             return state.filter((info) =>
+//                 info.id !== action.payload.id
+//             )
+//         default: return state
+//     }
+// }
