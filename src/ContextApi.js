@@ -6,9 +6,14 @@ const infoReducer = (state, action) => {
     switch (action.type) {
         case "DELETE_INFO":
             return state.filter((info) => info.id !== action.payload)
+        case "ADD_INFO":
+            return [...state, {
+                name: action.payload.name,
+                address: action.payload.address,
+                gender: action.payload.gender}]
         default:
             return state
-    } 
+    }
 }
 
 function ContextProvider({ children }) {
