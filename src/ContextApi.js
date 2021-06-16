@@ -1,52 +1,68 @@
-import React, { createContext, useState, useReducer } from 'react';
+import React, { createContext, useState, useReducer, useEffect } from 'react';
 
 const Context = createContext();
 
 const infoReducer = (state, action) => {
     switch (action.type) {
+
+        case "FETCH_INFO":
+            return [...state, action.payload]
         case "DELETE_INFO":
             return state.filter((info) => info.id !== action.payload)
         case "ADD_INFO":
-            return [...state, {
+            return [ {
                 name: action.payload.name,
-                address: action.payload.address,
-                gender: action.payload.gender}]
+                email: action.payload.email,
+                company : {catchPhrase: action.payload.phrase}
+               
+            } , ...state]
         default:
-            return state
+            return action.payload
     }
 }
 
 function ContextProvider({ children }) {
 
+    // const [data,setData] =useState([])
+    const [info, dispatch] = useReducer(infoReducer, [])
 
-    const [info, dispatch] = useReducer(infoReducer,
-        [
-            {
-                name: "Kit",
-                address: "Vancouver",
-                gender: "Male",
-                id: 0
-            },
-            {
-                name: "Taichi",
-                address: "Vancouver",
-                gender: "Male",
-                id: 1
-            },
-            {
-                name: "Miyabi",
-                address: "Vancouver",
-                gender: "Female",
-                id: 2
-            }
-        ])
+    const fetching = async () => {
+        try {
+            fetch("https://jsonplaceholder.typicode.com/users")
+                .then(res => {
+                    if (res.status !== 200) {
+                        console.log(`There are issues${res.status}`)
+                    } return res.json()
+                }).then(data => {
+                    console.log(data)
+                    dispatch({ type: "default", payload: data })
+                })
 
+        }
+        catch (err) {
+            console.log(`There are error${err}`)
+        }
+    }
+
+    useEffect(() => {
+        fetching()
+
+    }, [])
+
+
+    console.log(info)
 
 
     return (
-        <Context.Provider value={{ info, dispatch }}>
-            {children}
-        </Context.Provider>
+        <>
+            {info.length !== 0 && (
+
+                <Context.Provider value={{ info, dispatch }}>
+                    {children}
+                </Context.Provider>
+
+            )}
+        </>
     )
 }
 
